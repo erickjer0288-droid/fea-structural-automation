@@ -26,7 +26,7 @@ def interpolate_curve(curve: Mapping[int, float], x: float) -> tuple[float, floa
     if effective_x in curve:
         return curve[int(effective_x)], effective_x, was_clamped
 
-    for left, right in zip(coordinates, coordinates[1:]):
+    for left, right in zip(coordinates, coordinates[1:], strict=True):
         if left <= effective_x <= right:
             value = linear_interpolate(
                 effective_x,
