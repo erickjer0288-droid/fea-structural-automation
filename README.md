@@ -1,68 +1,143 @@
 # FEA Structural Automation
 
-Python tools and reproducible workflows for engineering quick-screen calculations used before detailed finite element analysis.
+[![quality](https://github.com/erickjer0288-droid/fea-structural-automation/actions/workflows/quality.yml/badge.svg)](https://github.com/erickjer0288-droid/fea-structural-automation/actions/workflows/quality.yml)
 
-## Project status
+A sanitized Python engineering toolkit for fast structural and sealing calculations before detailed finite element analysis.
 
-This repository is an initial, sanitized portfolio version. It contains a generic O-ring squeeze and reaction-force screening example derived from a personal engineering workflow. Proprietary geometry, client information, internal reports, and source documents are intentionally excluded.
+> **Portfolio safety:** this repository excludes proprietary geometry, client names, internal reports, and private source curves. Included curve values are illustrative and must not be used for production release.
 
-## Current example
+## Why this project exists
 
-The first module estimates:
+Detailed nonlinear contact analysis is valuable, but early engineering decisions often need a transparent first-pass model. This project turns a personal O-ring squeeze quick-screen into a typed, tested, installable Python package with traceable assumptions and explicit limitations.
 
-- updated LMC, nominal, and MMC squeeze values after a target change;
-- an approximate groove-depth adjustment;
-- nominal line load using illustrative Shore A and cross-section curves;
-- unit conversion between lbf/in and N/mm.
+## Current capability
 
-The calculation is intended for preliminary screening and education. It is not a substitute for supplier data, validation testing, detailed contact analysis, or a production design release.
+The first workflow evaluates an MMC-driven squeeze target and reports:
 
-## Repository structure
+- updated LMC, nominal, and MMC squeeze;
+- approximate groove-depth adjustment;
+- nearest available illustrative cross-section;
+- nominal line-load estimate across squeeze and Shore A;
+- lbf/in and N/mm results;
+- flags when interpolation inputs are clamped or approximated.
+
+## Engineering workflow
 
 ```text
-src/fea_structural_automation/   Reusable Python package
-examples/                        Command-line example
-tests/                           Unit tests
-docs/                            Methodology and assumptions
+Design inputs
+    |
+    v
+Input validation
+    |
+    v
+MMC-driven squeeze update
+    |
+    v
+Cross-section curve selection
+    |
+    v
+Squeeze interpolation + Shore interpolation
+    |
+    v
+Screening result and traceability flags
+    |
+    v
+Decision: refine geometry, obtain approved data, or proceed to FEA
 ```
 
-## Quick start
+## Installation
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
 pip install -e .
-python examples/oring_quickscreen.py --cross-section-mm 1.78 --shore-a 80 --target-mmc 30
 ```
 
-## Example output
+For development tools:
+
+```bash
+pip install -e .[dev]
+```
+
+## Command-line example
+
+```bash
+fea-oring-screen \
+  --cross-section-mm 1.78 \
+  --shore-a 80 \
+  --target-mmc 30
+```
+
+## Python API
+
+```python
+from fea_structural_automation import OringStudy, evaluate_oring_study
+
+study = OringStudy(
+    cross_section_mm=1.78,
+    shore_a=80.0,
+    target_mmc_percent=30.0,
+)
+result = evaluate_oring_study(study)
+
+print(result.squeeze)
+print(result.nominal_line_load_n_per_mm)
+```
+
+## Repository structure
 
 ```text
-Groove-depth adjustment: 0.063 mm
-New squeeze values: LMC=15.00%, NOM=22.00%, MMC=30.00%
-Estimated nominal line load: 15.43 lbf/in (2.7020 N/mm)
+src/fea_structural_automation/
+├── cli.py             Command-line interface
+├── curves.py          Explicitly illustrative screening curves
+├── interpolation.py   Dependency-free interpolation utilities
+├── models.py          Typed input and result models
+├── squeeze.py         Engineering calculation engine
+└── units.py           Unit conversions
+
+tests/                 Unit tests and edge cases
+docs/                  Methodology and assumptions
+examples/              Minimal executable examples
+.github/workflows/      Automated lint, typing, and tests
+```
+
+## Quality controls
+
+Every pull request runs:
+
+- Ruff linting;
+- strict MyPy checks on the package;
+- Pytest with coverage;
+- Python 3.10, 3.11, and 3.12 compatibility checks.
+
+Run the same checks locally:
+
+```bash
+ruff check .
+mypy src
+pytest
 ```
 
 ## Engineering limitations
 
-- Embedded force values are illustrative and must be replaced with approved supplier or test data for real design work.
-- Linear interpolation is used between available points.
-- Values outside the supported squeeze range are clamped for screening.
-- The nearest available cross-section is selected.
-- Results do not include friction, temperature, aging, tolerances beyond the simplified stack, material relaxation, or nonlinear contact behavior.
+This package is an early-stage screening tool. It does not model nonlinear elastomer material response, frictional contact, thermal effects, aging, compression set, pressure energization, gland fill, stretch, or full tolerance propagation. The nearest illustrative cross-section is selected and squeeze requests outside the curve domain are clamped.
+
+Read the detailed methodology in [`docs/methodology.md`](docs/methodology.md).
 
 ## Roadmap
 
-- Add CSV-based material-curve import.
-- Add uncertainty and tolerance propagation.
-- Add plots for squeeze and force curves.
-- Add a notebook comparing screening results against a simplified FEA model.
-- Add continuous integration and expanded tests.
+- Approved CSV curve import with metadata and units.
+- Sensitivity and tolerance propagation.
+- Automated plots and engineering report generation.
+- Reproducible notebook case study.
+- Comparison against a generic nonlinear contact FEA model.
+- Versioned releases and expanded documentation.
 
 ## License
 
-MIT License. See `LICENSE`.
+MIT License. See [`LICENSE`](LICENSE).
 
-## Aviso en español
+## Resumen en español
 
-Este repositorio es una versión genérica y saneada para portafolio. Los datos incluidos son ilustrativos y no deben utilizarse para liberar un diseño de producción sin validación independiente.
+Este repositorio transforma un cálculo preliminar de squeeze de O-ring en una herramienta Python profesional, reutilizable y verificable. Todos los datos públicos son ilustrativos; cualquier aplicación real requiere datos aprobados, validación física y revisión de ingeniería.
