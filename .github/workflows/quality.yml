@@ -25,3 +25,15 @@ jobs:
         run: mypy src
       - name: Test
         run: pytest
+      - name: Generate advanced case-study figures
+        if: matrix.python-version == '3.12'
+        env:
+          MPLBACKEND: Agg
+        run: python examples/advanced_case_study.py
+      - name: Upload advanced case-study figures
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: advanced-case-study-figures
+          path: results/advanced_case_study/*.png
+          if-no-files-found: error
