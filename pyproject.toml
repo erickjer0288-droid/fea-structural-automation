@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fea-structural-automation"
-version = "0.1.0"
+version = "0.2.0"
 description = "Sanitized engineering quick-screen tools for structural and sealing studies."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -21,7 +21,10 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering",
 ]
-dependencies = []
+dependencies = [
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+]
 
 [project.optional-dependencies]
 dev = [
