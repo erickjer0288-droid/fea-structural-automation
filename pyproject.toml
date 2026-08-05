@@ -55,3 +55,8 @@ select = ["E", "F", "I", "UP", "B"]
 python_version = "3.10"
 strict = true
 packages = ["fea_structural_automation"]
+
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*", "matplotlib", "matplotlib.*"]
+follow_imports = "skip"
+ignore_missing_imports = true
