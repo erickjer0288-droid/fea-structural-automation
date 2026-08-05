@@ -1,6 +1,9 @@
 """Minimal API example for the sanitized O-ring quick-screen."""
 
-from fea_structural_automation import OringStudy, evaluate_oring_study
+from fea_structural_automation import (
+    OringStudy,
+    evaluate_oring_study,
+)
 
 
 study = OringStudy(
